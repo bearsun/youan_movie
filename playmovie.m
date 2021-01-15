@@ -3,7 +3,7 @@ function playmovie(debug)
 % Movie: Almost a Comedy (2019) 1:06 - 21:06
 % Adapted from SimpleMovieDemo
 % Liwei Sun, 1/14/21
-
+sub = input('subject?', 's');
 run = input('run?', 's');
 if debug
     ntriggers = 1;
@@ -42,10 +42,11 @@ Screen('PlayMovie', movie, 1);
 
 if debug
     start(tr_tmr);
+    tbeginning = GetSecs;
 end
 
 TRWait(pretr);
-disp('start');
+tstart = GetSecs;
 % Playback loop: Runs until end of movie or keypress:
 while ~checkkey(kesc)
     % Wait for next movie frame, retrieve texture handle to it
@@ -66,7 +67,7 @@ while ~checkkey(kesc)
     % Release texture:
     Screen('Close', tex);
 end
-
+tend = GetSecs;
 % Stop playback:
 Screen('PlayMovie', movie, 0);
 
@@ -76,6 +77,7 @@ Screen('Flip', win);
 WaitSecs(postwait);
 % Close Screen, we're done:
 sca;
+save(['./data/', sub, '-', run, '.mat'], 'tbeginning', 'tstart', 'tend');
 
 if debug
     StopTimer;
