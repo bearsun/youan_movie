@@ -4,15 +4,21 @@ function playmovie(debug)
 % Adapted from SimpleMovieDemo
 % Liwei Sun, 1/14/21
 
-ntriggers = 31;
+run = input('run?', 's');
+if debug
+    ntriggers = 1;
+else
+    ntriggers = 37;
+end
 AssertOpenGL;
 sid = 0;
-moviename = [pwd, '/mclip.mp4'];
+moviename = [pwd, '/mclip_3-', run, '.mp4'];
 kesc = KbName('Escape');
 
 % MR parameters
 tr = 0;
 pretr = 5 * ntriggers; % wait 5 TRs for BOLD to be stable
+postwait = 20;
 if debug
     BUFFER = [];
     fRead = @() ReadFakeTrigger;
@@ -34,7 +40,12 @@ movie = Screen('OpenMovie', win, moviename);
 % Start playback engine:
 Screen('PlayMovie', movie, 1);
 
+if debug
+    start(tr_tmr);
+end
+
 TRWait(pretr);
+disp('start');
 % Playback loop: Runs until end of movie or keypress:
 while ~checkkey(kesc)
     % Wait for next movie frame, retrieve texture handle to it
@@ -61,7 +72,8 @@ Screen('PlayMovie', movie, 0);
 
 % Close movie:
 Screen('CloseMovie', movie);
-
+Screen('Flip', win);
+WaitSecs(postwait);
 % Close Screen, we're done:
 sca;
 
@@ -70,8 +82,7 @@ if debug
 else
     IOPort('Closeall');
 end
-sca;
-disp(ncor/(nblocks*ntpb));
+
     function [data, when] = ReadScanner
         [data, when] = IOPort('Read', P4);
         
@@ -95,9 +106,9 @@ disp(ncor/(nblocks*ntpb));
     function [data, when] = ReadFakeTrigger
         data = BUFFER;
         BUFFER = [];
-%         [~, ~, kDown] = KbCheck;
-%         b = logical(kDown(BUTTONS));
-%         BUFFER = [BUFFER CODES(b)];
+        %         [~, ~, kDown] = KbCheck;
+        %         b = logical(kDown(BUTTONS));
+        %         BUFFER = [BUFFER CODES(b)];
         when = GetSecs;
     end
 
